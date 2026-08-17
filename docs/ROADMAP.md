@@ -4,7 +4,7 @@ This file is a human-readable index of tracked work. GitHub issues remain the au
 
 ## P0 — bootstrap and first proof
 
-- #1 — bootstrap governance, durable docs, and traceability gate.
+- #1 — bootstrap governance, durable docs, and traceability gate. **Bootstrap complete; branch enforcement remains #8.**
 - #2 — establish ordinary SWE foundation and CI before kernel work.
 - #3 — prove one real walking skeleton end to end.
 - #4 — recover V4 stable task-state and context-preservation invariants.
