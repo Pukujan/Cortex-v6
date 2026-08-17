@@ -20,7 +20,7 @@ Every non-trivial PR must have:
 4. **Documentation impact** — either durable docs are changed in the PR, or the PR explicitly records why no durable documentation is affected.
 5. **Evidence** — tests/checks appropriate to the change.
 
-The docs gate checks items 1 and 4 mechanically. Other gates are added only when the underlying capability exists.
+The docs gate checks the tracking issue, its acceptance-criteria record, and documentation impact mechanically. Other gates are added only when the underlying capability exists.
 
 ## Documentation rule
 
@@ -72,6 +72,8 @@ A PR that cannot answer those questions should be split or returned to research.
 ## Required GitHub enforcement
 
 The workflow `.github/workflows/docs-gate.yml` must be configured as a **required status check** on `main`; otherwise it is advisory only. Repository branch/ruleset configuration is tracked in #8.
+
+The first ordinary implementation PR (#2) should also serve as the live smoke test that the docs gate runs and refuses malformed tracking/docs metadata.
 
 Once #2 lands, the ordinary SWE checks (lint/type/test/etc.) should also be required.
 
