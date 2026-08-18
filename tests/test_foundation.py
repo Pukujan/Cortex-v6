@@ -1,6 +1,5 @@
-from hypothesis import given, strategies as st
-
 import cortex_v6
+from hypothesis import given, strategies as st
 
 
 def test_package_imports() -> None:
