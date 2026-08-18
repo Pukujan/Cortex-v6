@@ -1,101 +1,151 @@
 # Cross-vendor development execution while V6 is under construction
 
-**Status:** operational development runbook only. This does not implement #19 and does not change the locked #2 -> #3 -> #4/#7 integration order.
+**Status:** temporary external-engineering runbook only. This does not implement #19, does not make OpenCode part of authoritative V6 state, and does not change the #2 -> #3 -> #4/#7 minimal-kernel integration order.
+
+**Governance:** fresh-session audit #25 governs this runbook. OpenCode bootstrap qualification is tracked by #33; external-data authority by #30; LiteLLM transport alignment by `Pukujan/litellm-ckff-ops#24`; seating/retry donor qualification by #31.
 
 ## Purpose
 
 Cortex V5 is retired. V5 may be consulted only as historical donor/reference evidence for methodology, model ranking, seating mechanics, and failure lessons. No live V6 execution path should depend on the V5 runtime.
 
-Until V6 has earned and implemented its own model/runtime boundary, cross-vendor coding, test-writing, review, and research that require a repository-aware frontier agent use OpenCode CLI as an external execution shell over the LiteLLM-compatible CKFF model boundary.
+Until V6 has earned and implemented its own model/runtime boundary, repository-aware frontier-agent work may use OpenCode CLI as an **external execution shell** over the LiteLLM-compatible CKFF boundary.
+
+OpenCode exists here to execute one bounded packet. It does not decide what the project is, what Cortex state means, which requirement is authoritative, whether work is complete, or what the next recursive task should become.
 
 The temporary development flow is:
 
 ```text
-live Cortex-v6 repository + relevant durable context
+live Cortex-v6 repository + explicitly approved durable context
                     |
                     v
-current task/risk/methodology policy
+human/bootstrap task-risk-methodology policy
                     |
                     v
-qualified cross-vendor seat selection
+qualified exact model seat
                     |
                     v
-pre-granulated task packet
+pre-granulated task packet + explicit egress/mutation authority
                     |
                     v
-OpenCode CLI -> explicit LiteLLM model seat
+OpenCode CLI -> exact LiteLLM model
                     |
                     v
-workspace change / tests / research / critique
+isolated workspace change / tests / research / critique
                     |
                     v
-project tests + independent assurance + GitHub/CI
+independent project checks + review + GitHub/CI
+                    |
+                    v
+bootstrap controller decides next granule / retry / seat switch
 ```
 
-OpenCode is not authoritative Cortex state. LiteLLM is model transport. FOSSIL is not active task state. Project tests and later V6 evidence admission remain the completion authority.
+## OpenCode is allowed to be
+
+- a repository-aware **worker/test-writer** for one bounded mutation packet in an isolated authorized workspace;
+- a **reviewer/researcher/evaluator** for one bounded read-oriented packet;
+- a tool-using shell that can inspect authorized repository state, run authorized commands, and return a diff/test/research/critique artifact;
+- a temporary bootstrap implementation detail while V6 itself is not yet trusted to orchestrate this work.
+
+## OpenCode is not allowed to be
+
+OpenCode is **not**:
+
+- authoritative Cortex task, requirement, work-unit, generation, lifecycle, or completion state;
+- the planner-of-record for an unbounded project or issue;
+- permission to recursively decompose/widen work without returning control to the bootstrap controller;
+- a hidden model router or cross-vendor fallback authority;
+- permission to mutate the main/shared checkout from multiple workers;
+- permission to read or transmit files outside the packet's explicit read/egress authority;
+- a substitute for project tests, independent review, assurance, or GitHub/CI;
+- a source of truth merely because the model says a task is done;
+- native #19 implementation, a V6 `AgentRuntime`, or a permanent OpenCode dependency.
 
 ## Ownership split
 
 - **Live project:** current requirements, source, tests, config, ADRs, acceptance meaning, and Git state.
 - **FOSSIL:** durable research, provenance, lineage, historical failures, prior evidence, and reusable knowledge. Current live repository state wins conflicts about present project facts.
-- **Cortex/V6 policy:** task/risk classification, role/topology choice, model-seat eligibility/ranking, retry/switch decisions, evidence requirements, and later lifecycle transitions.
-- **OpenCode:** temporary repository-aware coding/research/reviewer execution shell.
-- **LiteLLM/CKFF:** provider/model transport only.
+- **Bootstrap/Cortex policy:** task/risk classification, role/topology choice, model-seat eligibility/ranking, retry/switch decisions, evidence requirements, and later lifecycle transitions.
+- **OpenCode:** temporary repository-aware execution shell only.
+- **LiteLLM/CKFF:** exact-model transport only for this lane.
 - **Project assurance/GitHub:** deterministic checks, review, CI, and merge authority.
+
+## Entry gates for live external-model use
+
+### Controlled qualification fixtures
+
+Sanitized/non-sensitive qualification fixtures may be used only when:
+
+- #30 has defined the applicable data-egress/secret policy for the fixture;
+- a staging/qualified LiteLLM path implements the 600-second exact-model target or the probe is explicitly part of `litellm-ckff-ops#24`;
+- the installed OpenCode version/config is pinned and the result is recorded under #33.
+
+### General V6 development use
+
+Do not treat the lane as generally qualified for V6 repository work until #33 records that the exact-model, timeout, authority, isolation, data-egress, and independent-verification requirements pass.
 
 ## Canonical development inference contract: 600 seconds
 
-For the V6 cross-vendor development lane, keep the inference-timeout contract deliberately simple:
+For the V6 cross-vendor development lane:
 
 - **one model request ceiling: 600 seconds**;
-- OpenCode's CKFF/LiteLLM provider timeout is configured to **600000 ms**;
-- LiteLLM's request timeout is configured to **600 seconds**;
+- OpenCode's provider timeout target is **600000 ms**;
+- LiteLLM's model request timeout target is **600 seconds**;
 - compatibility bridges must not introduce shorter per-model attempt deadlines;
-- an OpenCode/LiteLLM/route build that terminates a valid request earlier than this contract is **unqualified for the V6 development lane** rather than becoming a new Cortex timeout policy.
+- lower-timeout backup routes are separate route qualifications, not alternate Cortex inference deadlines;
+- an OpenCode/LiteLLM build that terminates a valid request earlier is unqualified for this lane rather than becoming a new Cortex timeout policy.
 
-The selected development route is the CKFF endpoint qualified for the 600-second envelope. Lower-timeout backup routes may exist operationally, but they are not interchangeable members of this V6 development contract and must not be selected automatically beneath Cortex/OpenCode.
+Streaming is preferred for long generations but does not create a second semantic timeout or extend the 600-second ceiling.
 
-Streaming remains preferred for long generations because it avoids idle-connection behavior, but streaming does not create a second semantic timeout value. The model request still has the same 600-second ceiling.
+Local tool/subprocess/test/healthcheck timeouts may exist for deterministic operations. They are not model-seat deadlines and must not be scored as model capability failures.
 
-Local tool/subprocess/test timeouts may exist for their own deterministic operations. They are not model-seat deadlines and must not be reported as model capability failures.
+### OpenCode qualification rule
 
-### Qualification rule
-
-Before relying on an OpenCode build for this lane, run a controlled qualification proving that its configured provider request can continue beyond any previously observed hidden ~300-second client cutoff and remains bounded by the 600-second contract. If the installed OpenCode version fails earlier, reject/upgrade/fix that client for this lane; do not encode the observed defect as a new 240- or 300-second Cortex policy.
+Pin the installed OpenCode version/config, configure the provider request target to `600000` ms, and run a controlled request extending beyond any previously suspected hidden ~300-second cutoff. If the client terminates earlier, reject/upgrade/fix it for this lane.
 
 ## Exact model identity; no hidden cross-model fallback
 
-A Cortex/bootstrap seating decision must remain observable end to end.
+A bootstrap/Cortex seating decision must remain observable end to end.
 
-- Every summon names the exact selected LiteLLM model seat.
-- The compatibility bridge must default to **no cross-model fallback**.
-- LiteLLM may perform transport mechanics that preserve the same logical model identity, but it must not silently substitute a different model/vendor for the selected seat.
-- If the selected model fails, the result returns to the Cortex/bootstrap seating controller.
-- The controller decides whether to retry the same seat or switch to the next ranked cross-vendor seat.
-- Any response metadata that reports a different actual model than the requested seat is rejected as invalid seating evidence unless that substitution was explicitly requested for a separate experiment.
+- Every summon names one exact selected LiteLLM model.
+- The V6/OpenCode lane requires cross-model fallback **off by default** below Cortex.
+- Transport mechanics may retry only while preserving the same logical selected-model identity.
+- A different model/vendor must not be silently substituted.
+- If the selected model fails, the attempt returns to the bootstrap/Cortex controller.
+- The controller decides whether to retry the same seat or create a separate attempt using another ranked vendor seat.
+- Unexpected requested/actual model mismatch invalidates the attempt as seating evidence.
 
-This boundary matters because hidden provider fallback would corrupt model ranking, vendor-diversity, retry, failure, cost, and assurance evidence.
+Hidden fallback would corrupt model ranking, vendor diversity, retry counts, cost attribution, and assurance evidence.
+
+## Data-egress authority
+
+Read authority is not automatically egress authority.
+
+Each live external-model packet must be allowed by #30's project/data policy. In particular:
+
+- secrets, credentials, `.env` material, personal data, confidential files, private logs, or unrelated repository contents must not be sent merely because a tool can read them;
+- authorized files/tools/effects and authorized external context must be explicit;
+- tool output must be treated as model egress too;
+- if the packet contains unknown or prohibited data, fail closed and use a local/human path rather than bypassing policy.
 
 ## Seating methodology while V6 is built
 
-Reuse V5's **methodology** as donor evidence, not its runtime implementation or every historical constant.
+V5 seating/ranking material is **donor evidence only**. Issue #31 now owns qualification of that donor evidence and of the retry/failure budget before #19.
 
-The bootstrap/V6 target policy currently preserved by issue #19 is:
+The following are therefore hypotheses/inputs to qualify, not permanent constants:
 
-1. derive eligibility from the task, risk, role, and methodology;
-2. rank eligible models by current strength/evidence;
-3. select seats across independent vendors;
-4. treat the first/health-recovery attempts as probes;
-5. switch a seat after **3 probe failures**;
-6. use a **30 normal-retry ceiling** when normal retry semantics apply;
-7. record retry/switch outcomes separately from transport failures;
-8. never count a shared route/client timeout as independent evidence that each model is incapable.
+- task/risk/role/methodology-derived eligibility;
+- strength ranking from current evidence;
+- cross-vendor seat diversity;
+- a 3-probe failure target;
+- a 30-normal-retry ceiling.
 
-V5's older continuous-failure threshold is donor history, not V6 policy. #19 must implement and mechanically test the V6-native 3-probe / 30-normal contract when its entry gates are satisfied.
+A 600-second per-request ceiling makes an unbudgeted retry count dangerous. #31 must define cumulative wall-clock/cost budgets, retryable failure classes, backoff/cooldown, switch/reset semantics, and exact-generation fencing before these values become V6-native policy.
+
+Transport/client/rate-limit/tool/policy failures must not automatically lower model capability ranking.
 
 ## Granulation rule
 
-The controller/human prepares the granule **before** OpenCode receives it. Do not give a frontier coding agent an unbounded issue such as "implement the whole subsystem."
+The bootstrap controller/human prepares the granule **before** OpenCode receives it. Do not give a frontier coding agent an unbounded issue such as "implement the whole subsystem."
 
 Each packet should contain:
 
@@ -104,48 +154,64 @@ TASK / WORK UNIT / GENERATION OR REPO REF
 ROLE: worker | test-writer | reviewer | researcher | evaluator
 OBJECTIVE: one bounded outcome
 AUTHORITATIVE INPUTS: exact issue/requirement/current repo refs
-FOSSIL CONTEXT: only relevant durable facts with provenance
-AUTHORIZED SCOPE: exact workspace/files/tools/effects
+FOSSIL CONTEXT: only relevant approved durable facts with provenance
+READ AUTHORITY: exact files/repository surfaces that may be inspected
+EGRESS AUTHORITY: what information may be sent to the selected external model
+MUTATION AUTHORITY: exact workspace/files/effects that may be changed
 NON-GOALS: explicit exclusions
 ACCEPTANCE: observable check for this granule
 REQUIRED EVIDENCE: diff/tests/research/critique to return
 MODEL SEAT: exact selected LiteLLM model
 REQUEST CEILING: 600 seconds
-STOP CONDITION: ambiguity, missing authority, prerequisite failure, or inability to finish the current model turn inside the request contract
-HANDOFF: facts/checkpoint required by the next granule
+STOP CONDITION: ambiguity, missing authority, prerequisite failure, unsafe egress, or inability to finish the current model turn inside the request contract
+HANDOFF: facts/checkpoint required by the bootstrap controller before any next granule
 ```
 
-A granule should normally change or answer one thing and have an obvious verification boundary. A longer engineering job proceeds through multiple bounded granules and model/tool turns rather than one recursively widening prompt.
+A granule should normally change or answer one thing and have an obvious verification boundary. A larger engineering job proceeds through multiple independently bounded granules; OpenCode returns control between them.
 
-## Role mapping
+## Role mapping and workspace isolation
 
-Use OpenCode as an execution shell, not an autonomous recursive organization.
+- `worker` / `test-writer`: mutating agent in an authorized isolated worktree/workspace.
+- `reviewer` / `researcher` / `evaluator`: non-mutating/read-oriented by default.
 
-- `worker` / `test-writer`: mutating coding agent in an authorized isolated workspace.
-- `reviewer` / `researcher` / `evaluator`: non-mutating/read-oriented agent; allow web/repository research as needed but do not grant write authority by convenience.
+For independent cross-vendor critique/evaluation, use genuinely independent vendor seats where useful. For multiple mutating workers, each gets an isolated worktree/workspace and explicit non-overlapping or coordinated scope; never point multiple workers at one mutable checkout.
 
-For independent cross-vendor critique or evaluation, use seats from different vendors. For multiple mutating workers, give each seat an isolated worktree/workspace; never point multiple workers at one mutable checkout.
+Disable/avoid recursive subagent fan-out and doom-loop recovery for this temporary path. OpenCode may use bounded tools inside one packet, but the bootstrap controller chooses the next packet/model after the packet returns.
 
-Disable or avoid recursive subagent fan-out and doom-loop recovery for this temporary path. Cortex/human granulation chooses the next bounded packet rather than allowing an execution agent to recursively widen the task.
+## Completion and evidence
+
+Model self-report is never enough.
+
+For mutating packets, return at minimum:
+
+- exact requested/actual model identity and attempt metadata;
+- changed files/diff;
+- relevant local test/tool results;
+- stop/failure reason if incomplete;
+- any ambiguity discovered.
+
+Then run the project-owned independent verification/CI/review appropriate to the change. GitHub/CI remains merge authority. A successful OpenCode turn is evidence about an attempted granule, not proof that a V6 requirement is complete.
 
 ## Seating donor evidence
 
-V5's measured seating research may be reused as **donor evidence only**, not as V6 runtime code or permanent truth. Its last recorded five-vendor frontier prior was:
+Historical V5 model rankings may be consulted as priors only. They must be intersected with the live provider/model catalog, current health, task suitability, privacy/egress eligibility, vendor independence, and newer measured evidence.
 
-1. `grok-4.6` — xAI
-2. `gpt-5.6-sol` — OpenAI
-3. `kimi-k3` — Moonshot
-4. `qwen3.8-max` — Alibaba
-5. `gemini-3.6-flash` — Google
-
-Before each consequential cross-vendor run, intersect any prior with the live LiteLLM catalog, model health, task suitability, vendor independence, and newer measured evidence. #19 still owns the eventual V6-native seating contract and must qualify it independently.
+Do not hard-code a historical frontier list into V6 truth. #31/#19 own the later qualification and native seating policy.
 
 ## What is deliberately not implemented yet
 
-This runbook does **not** add a V6 LiteLLM client, model router, OpenCode dispatcher module, runtime adapter, or lifecycle integration. Doing that now would bypass the locked dependency gates.
+This runbook does **not** add a V6 LiteLLM client, model router, OpenCode dispatcher module, runtime adapter, lifecycle integration, or automatic recursive agent organization.
 
-When #19's entry gates are satisfied, its implementation should derive the V6 transport contract from current V6 needs and this operational evidence. It must not copy the retired V5 runtime wholesale.
+When #19's corrected entry gates are eventually satisfied, derive the native transport/seating contract from qualified V6 needs and evidence. Do not copy the retired V5 runtime or make the bootstrap shell permanent by accident.
 
 ## Resume rule
 
-Any agent resuming Cortex V6 should read this file together with `docs/V6_LOCKED_PLAN.md` and issue #19 before doing cross-vendor frontier-agent work. Treat V5 as frozen historical evidence only.
+Before cross-vendor frontier-agent work, read in order:
+
+1. `docs/V6_FRESH_SESSION_AUDIT_2026-08-18.md` / issue #25;
+2. this runbook;
+3. #30 (egress), #31 (seating/retry qualification), and #33 (OpenCode bootstrap qualification);
+4. `Pukujan/litellm-ckff-ops` main README + `docs/TIMEOUT-CONTRACT.md` + issue #24;
+5. the current project issue/accepted SHA governing the actual granule.
+
+If those sources conflict with older implementation-specific handoff text, the fresh audit/supersession chain wins unless #25 records a later disposition.
