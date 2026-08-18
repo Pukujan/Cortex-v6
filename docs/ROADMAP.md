@@ -1,6 +1,6 @@
 # Cortex V6 Roadmap
 
-This file is a human-readable index of tracked work. GitHub issues remain the authoritative work items. The detailed durable handoff is `docs/V6_LOCKED_PLAN.md`.
+This file is a human-readable index of tracked work. GitHub issues remain the authoritative work items. The detailed durable handoff is `docs/V6_LOCKED_PLAN.md`; draft PR #20 carries the locked-plan documentation into `main`.
 
 ## P0 — bootstrap and first kernel proof
 
