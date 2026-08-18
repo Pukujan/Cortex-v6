@@ -10,9 +10,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path, PurePosixPath
 
-
-class ContextBudgetError(ValueError):
-    """Raised when protected requirement state cannot fit in the context budget."""
+from cortex_v6.context import ContextController, StableTaskState, render_stable
 
 
 class AuthorityError(PermissionError):
@@ -91,24 +89,23 @@ def compose_context(
 ) -> BoundedContext:
     """Build bounded context while refusing to compact protected requirement semantics."""
 
-    if budget_chars < 1:
-        raise ContextBudgetError("context budget must be positive")
-
-    protected = (
-        f"requirement_id={requirement.requirement_id}\n"
-        f"version={requirement.version}\n"
-        f"target={requirement.target.as_posix()}\n"
-        f"expected_text={requirement.expected_text}"
+    task_state = StableTaskState.create(
+        goals=[f"requirement_id={requirement.requirement_id}"],
+        constraints=[
+            f"version={requirement.version}",
+            f"target={requirement.target.as_posix()}",
+            f"expected_text={requirement.expected_text}",
+        ],
+        completion_criteria=["exact-output verifier PASS required"],
     )
-    if len(protected) > budget_chars:
-        raise ContextBudgetError("protected requirement state exceeds context budget")
-
-    remaining = budget_chars - len(protected)
-    expendable = transcript[-remaining:] if remaining else ""
-    context = BoundedContext(protected=protected, expendable=expendable, budget_chars=budget_chars)
-    if context.size_chars > budget_chars:
-        raise AssertionError("bounded context exceeded its declared budget")
-    return context
+    controller = ContextController(max_chars=budget_chars, task_state=task_state)
+    if transcript:
+        controller.add_text(transcript)
+    controller.compact()
+    protected = render_stable(task_state)
+    rendered = controller.render()
+    expendable = rendered.removeprefix(protected).lstrip("\n")
+    return BoundedContext(protected=protected, expendable=expendable, budget_chars=budget_chars)
 
 
 def make_work_unit(
