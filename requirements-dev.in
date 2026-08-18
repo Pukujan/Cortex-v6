@@ -1,0 +1,5 @@
+hypothesis==6.138.2
+mypy==1.17.1
+pytest==8.4.1
+ruff==0.12.9
+setuptools==80.9.0
