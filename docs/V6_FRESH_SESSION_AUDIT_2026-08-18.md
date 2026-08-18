@@ -101,6 +101,12 @@ The CKFF gateway contract states it is not verified zero-data-retention and proh
 
 Basic proof that V6 no longer needs SSC v1 should happen as soon as #4 is integrated. It should not wait for #17's later context-source bakeoff. #32 separates those concerns.
 
+### 6. Qualify the bootstrap execution lane separately from native V6
+
+OpenCode is intended to be the external repository-aware execution shell used to build V6 before native V6 runtime/model orchestration exists. That engineering lane needs an explicit qualification lifecycle so it cannot silently become Cortex state or bypass #19.
+
+#33 owns the pinned OpenCode version/config, exact-model/600-second qualification, isolated mutation workspaces, read-only review roles, pre-granulation, and independent project verification.
+
 ## Corrected temporary cross-vendor development contract
 
 `docs/CROSS_VENDOR_DEV_EXECUTION.md` is the operational source. The key rules are:
@@ -126,6 +132,7 @@ The remaining LiteLLM implementation mismatch is tracked in `Pukujan/litellm-ckf
 - #30 — data-egress/secret policy for live OpenCode/LiteLLM development.
 - #31 — V5 seating donor + retry/failure/budget qualification before #19.
 - #32 — early SSC retirement separate from #17 context bakeoff.
+- #33 — qualify the external OpenCode bootstrap lane used to develop V6.
 
 ## Corrected near-term order
 
@@ -139,9 +146,10 @@ Do **not** start by implementing #10.
 5. Run the first minimal-kernel value gate (#28 Gate A)
 6. Prove SSC v1 is absent from the live kernel path (#32 early phase)
 7. Resolve #27 before redefining #10-#12
-8. Qualify data-egress + LiteLLM/OpenCode transport before live cross-vendor development (#30 + litellm-ckff-ops#24)
-9. Qualify any V5 donors actually needed (#5 / #31)
-10. Only then expand later mechanisms one at a time behind their progressive gates
+8. Qualify data-egress + LiteLLM transport (#30 + litellm-ckff-ops#24)
+9. Qualify the external OpenCode bootstrap lane (#33)
+10. Qualify any V5 donors actually needed (#5 / #31)
+11. Only then expand later mechanisms one at a time behind their progressive gates
 ```
 
 ## Resume rule
