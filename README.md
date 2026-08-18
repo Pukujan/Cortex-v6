@@ -28,6 +28,18 @@ V6 grows one proven path at a time. New mechanisms require a tracked issue, an e
 
 The repository was empty when bootstrap issue #1 was opened. Issue #1 is the one-time exception authorizing the initial governance/docs commits directly to `main`. After bootstrap, substantive work is expected to use linked issues, pull requests, and the repository gates.
 
+## Developer check
+
+Install `uv`, then run the same complete foundation gate used by CI:
+
+```bash
+make check
+```
+
+That command creates/synchronizes a Python 3.12 `.venv` from `requirements-dev.lock`, checks the package import, verifies Ruff formatting/lint, runs strict Mypy, and runs Pytest including a real Hypothesis property.
+
+The package uses a conventional `src/cortex_v6` layout. No Cortex-specific package manager, type checker, linter, or test runner is introduced.
+
 See:
 
 - `docs/PROJECT.md` — scope and recovery strategy
@@ -37,4 +49,4 @@ See:
 
 ## Current milestone
 
-No kernel implementation yet. The current milestone is repository governance and the ordinary SWE foundation tracked by #1 and #2.
+Issue #2 establishes the ordinary SWE foundation. Kernel behavior remains intentionally absent until issue #3 proves the first walking skeleton.
