@@ -1,0 +1,13 @@
+{
+  "source_repository": "Pukujan/cortex-v4",
+  "source_commit": "923338c9c4c309ffadddd7805f4e5649006ede77",
+  "source_files": [
+    "cortex_v4/memory/task_state.py",
+    "cortex_v4/memory/context_controller.py",
+    "tests/test_v4_memory_core.py"
+  ],
+  "goal_marker": "PROTECTED-MARKER-991",
+  "protected_text": "PROTECTED-MARKER-991 keep",
+  "requires_offload_under_pressure": true,
+  "rejects_empty_goals": true
+}
