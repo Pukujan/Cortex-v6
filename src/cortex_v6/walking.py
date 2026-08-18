@@ -177,8 +177,10 @@ def admit_completion(
 ) -> bool:
     """Fail closed unless PASS evidence is bound to the exact current inputs and generation."""
 
+    expected_digest = sha256(requirement.expected_text.encode("utf-8")).hexdigest()
     return (
         receipt.verified
+        and receipt.observed_sha256 == expected_digest
         and receipt.requirement_id == requirement.requirement_id
         and receipt.requirement_version == requirement.version
         and receipt.work_unit_id == work.work_unit_id

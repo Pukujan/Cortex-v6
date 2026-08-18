@@ -1,0 +1,15 @@
+{
+  "source_repository": "Pukujan/scc-v2",
+  "source_commit": "7d9effd70af72f4866585059bd6382845dee4c35",
+  "source_files": [
+    "durable_state/receipts/tests/test_receipts_ext.py",
+    "durable_state/task_ledger/tests/test_managed_run_recovery.py",
+    "control_plane/authz/src/authorize.py"
+  ],
+  "selected_failure_classes": [
+    "production composition bypasses an authority seam",
+    "production composition bypasses an independent verifier",
+    "evidence is not bound to the exact effect",
+    "stale attempt evidence commits a newer generation"
+  ]
+}
